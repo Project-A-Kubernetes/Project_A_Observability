@@ -8,7 +8,7 @@ This project provides a **production-ready monitoring and alerting setup** for K
 * **Slack alert notifications**
 
 The system monitors application and automatically sends alerts to a Slack channel.
-NOTE: **ServiceMonitor** for service discovery is defined in application helm charts
+- NOTE: **ServiceMonitor** for service discovery is defined in application helm charts
 ---
 
 # Architecture
