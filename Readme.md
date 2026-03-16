@@ -14,7 +14,7 @@ The system monitors application and automatically sends alerts to a Slack channe
 # Architecture
 
 The alert pipeline works as follows:
-
+```
 Application Metrics
 ↓
 Prometheus Scrapes Metrics
@@ -26,11 +26,14 @@ Alertmanager Receives Alerts
 AlertmanagerConfig Routes Alerts
 ↓
 Slack Notifications
-
+```
 ---
-# Diagram 
-### when alert was firing
+# Diagram
+### When alert is firing
+![Kubernetes Observability Architecture](assets/image.png)
 
+### When alert stops firing
+![Kubernetes Observability Architecture](assets/image2.png)
 # Components
 
 ## PrometheusRule
