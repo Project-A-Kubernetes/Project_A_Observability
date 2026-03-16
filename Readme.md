@@ -30,10 +30,13 @@ Slack Notifications
 ---
 # Diagram
 ### When alert is firing
-![Kubernetes Observability Architecture](assets/image.png)
+![Kubernetes Observability Architecture](assets/image1.png)
 
 ### When alert stops firing
 ![Kubernetes Observability Architecture](assets/image2.png)
+
+## prometheusRule
+![Kubernetes Observability Architecture](assets/image.png)
 # Components
 
 ## PrometheusRule
