@@ -1,0 +1,54 @@
+{{- with .Values.alertmanager }}
+apiVersion: monitoring.coreos.com/v1alpha1
+kind: AlertmanagerConfig
+metadata:
+  name: {{ .name }}
+  namespace: {{ .namespace }}
+spec:
+
+  route:
+    groupBy: ['alertname']
+    groupWait: 30s
+    groupInterval: 5m
+    repeatInterval: 1h
+    receiver: slack-team
+
+    routes:
+      - matchers:
+          - severity="critical" #match pods with this labels
+          - namespace="prod" #match pods in this namespace
+        receiver: slack-team #we can have different receiver here but will use slack, and same channel but we can use pagerduty 
+
+      - matchers:
+          - severity="warning"
+          - namespace="prod"
+        receiver: slack-team # same here we can configure it to different receiver and send to different alert source like slack or email
+
+  receivers:
+    - name: slack-team
+      slackConfigs:
+        - apiURL: {{ .slack.api_url | quote }}
+            name: {{ .slack.name }}
+            key: {{ .slack.key }} 
+          channel: {{ .slack.channel | quote }}
+          sendResolved: true
+
+          text: |
+            *Alert:* {{`{{ .CommonLabels.alertname }}`}}
+            *Severity:* {{`{{ .CommonLabels.severity }}`}} 
+
+            *Summary:* {{`{{ .CommonAnnotations.summary }}`}}
+            *Description:* {{`{{ .CommonAnnotations.description }}`}}
+
+          color: '{{`{{ if eq .CommonLabels.severity "critical" }}`}}danger{{`{{ else }}`}}warning{{`{{ end }}`}}'
+
+    # Prioritizing critical alert over warning
+  inhibitRules:
+    - sourceMatchers:
+        - severity="critical" 
+      targetMatchers:
+        - severity="warning"
+      equal:
+        - alertname
+        - namespace
+{{- end }}

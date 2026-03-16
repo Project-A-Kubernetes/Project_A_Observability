@@ -1,0 +1,82 @@
+
+nameOverride: ""
+fullnameOverride: "project-a-observability"
+service:
+  port: 80
+
+
+#prometheusRule configuration 
+
+rule:
+  name: project-a-alerts
+  namespace: monitor
+
+  highPodCPUUsage:
+    expr: |
+      (
+        sum(rate(container_cpu_usage_seconds_total{namespace="prod"}[5m])) by (pod, namespace)
+        /
+        sum(kube_pod_container_resource_limits{resource="cpu"}) by (pod, namespace)
+      ) > 0.7
+    for: 5m
+    severity: warning
+    summary: "High CPU usage on pod"
+    description: "Pod {{`$labels.pod`}} in namespace {{`$labels.namespace`}} is using more than 70% CPU"
+
+  highPodMemoryUsage:
+    expr: |
+      (
+        sum(container_memory_working_set_bytes{namespace="prod"}) by (pod, namespace)
+        /
+        sum(kube_pod_container_resource_limits{resource="memory"}) by (pod, namespace)
+      ) > 0.8
+    for: 5m
+    severity: warning
+    summary: "High memory usage on pod"
+    description: "Pod {{`$labels.pod`}} in namespace {{`$labels.namespace`}} memory usage above 80%"
+
+  podCrashLooping:
+    expr: 'rate(kube_pod_container_status_restarts_total{namespace="prod"}[5m]) > 0'
+    for: 5m
+    severity: critical
+    summary: "Pod restarting frequently"
+    description: "Pod {{`$labels.pod`}} in namespace {{`$labels.namespace`}} restarting frequently"
+
+  SLOBurnRateTooFast:
+    expr: |
+      (
+        sum(rate(http_requests_total{namespace="prod",http_status="5.."}[5m]))
+        /
+        sum(rate(http_requests_total{namespace="prod"}[5m]))
+      ) > 0.015
+    for: 2m
+    severity: critical
+    slo: "99.90"
+    summary: "SLO burn rate extremely high"
+    description: "Project-A backend is burning error budget too fast"
+
+  SLOBurnRateSlow:
+    expr: |
+      (
+        sum(rate(http_requests_total{namespace="prod",http_status="5.."}[1h]))
+        /
+        sum(rate(http_requests_total{namespace="prod"}[1h]))
+      ) > 0.001
+    for: 15m
+    severity: warning
+    slo: "99.90"
+    summary: "SLO burn rate elevated"
+    description: "Project-A backend consuming error budget faster than expected"
+
+
+alertmanager:
+  name: project-a-alertmanager
+  namespace: monitor
+  replicas: 2
+  version: v0.27.0   # Alertmanager version supported by Prometheus Operator
+
+  slack:
+    api_url: 
+    name: slack-webhook
+    key: webhook
+    channel: "#all-felix-john"

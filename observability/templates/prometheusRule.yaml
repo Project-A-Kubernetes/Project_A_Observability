@@ -1,0 +1,73 @@
+{{- with .Values.rule }}
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  name: {{ .name }}
+  namespace: {{ .namespace }}
+  labels:
+    release: kube-prometheus-stack
+spec:
+  groups:
+
+  - name: kubernetes-resources
+    interval: 30s
+    rules:
+    - alert: HighPodCPUUsage
+      expr: |
+{{ .highPodCPUUsage.expr | nindent 8 }}
+      for: {{ .highPodCPUUsage.for }}
+      labels:
+        severity: {{ .highPodCPUUsage.severity }}
+      annotations:
+        summary: {{ .highPodCPUUsage.summary | quote }}
+        description: {{ .highPodCPUUsage.description | quote }}
+
+    - alert: HighPodMemoryUsage
+      expr: |
+{{ .highPodMemoryUsage.expr | nindent 8 }}
+      for: {{ .highPodMemoryUsage.for }}
+      labels:
+        severity: {{ .highPodMemoryUsage.severity }}
+      annotations:
+        summary: {{ .highPodMemoryUsage.summary | quote }}
+        description: {{ .highPodMemoryUsage.description | quote }}
+
+  - name: kubernetes-pods
+    interval: 30s
+    rules:
+    - alert: PodCrashLooping
+      expr: |
+{{ .podCrashLooping.expr | nindent 8 }}
+      for: {{ .podCrashLooping.for }}
+      labels:
+        severity: {{ .podCrashLooping.severity }}
+      annotations:
+        summary: {{ .podCrashLooping.summary | quote }}
+        description: {{ .podCrashLooping.description | quote }}
+
+  - name: project-a-slo-alerts
+    interval: 30s
+    rules:
+    - alert: SLOBurnRateTooFast
+      expr: |
+{{ .SLOBurnRateTooFast.expr | nindent 8 }}
+      for: {{ .SLOBurnRateTooFast.for }}
+      labels:
+        severity: {{ .SLOBurnRateTooFast.severity }}
+        slo: {{ .SLOBurnRateTooFast.slo | quote }}
+      annotations:
+        summary: {{ .SLOBurnRateTooFast.summary | quote }}
+        description: {{ .SLOBurnRateTooFast.description | quote }}
+
+    - alert: SLOBurnRateSlow
+      expr: |
+{{ .SLOBurnRateSlow.expr | nindent 8 }}
+      for: {{ .SLOBurnRateSlow.for }}
+      labels:
+        severity: {{ .SLOBurnRateSlow.severity }}
+        slo: {{ .SLOBurnRateSlow.slo | quote }}
+      annotations:
+        summary: {{ .SLOBurnRateSlow.summary | quote }}
+        description: {{ .SLOBurnRateSlow.description | quote }}
+
+{{- end }}

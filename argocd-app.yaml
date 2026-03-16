@@ -1,0 +1,25 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: observability
+  namespace: argocd
+spec:
+  project: default
+  # Target cluster where resources will be deployed
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: monitor
+  # source of my helm chart repo
+  source:
+    repoURL: https://github.com/Project-A-Kubernetes/Project_A_Observability.git
+    targetRevision: main
+    path: observability  
+    helm:
+      releaseName: observability
+
+  syncPolicy:
+    automated:
+      prune: true         
+      selfHeal: true        
+    syncOptions:
+      - CreateNamespace=true  
