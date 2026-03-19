@@ -44,13 +44,15 @@ spec:
 
     # Prioritizing critical alert over warning
   inhibitRules:
-    - sourceMatchers:
-        - severity="critical" 
-      targetMatchers:
-        - severity="warning"
-      equal:
-        - alertname
-        - namespace
+  - sourceMatchers:
+      - name: severity
+        value: critical
+    targetMatchers:
+      - name: severity
+        value: warning
+    equal:
+      - alertname
+      - namespace
 {{- end }}
 
 
