@@ -7,7 +7,7 @@ metadata:
 spec:
 
   route:
-    groupBy: ['alertname']
+    groupBy: ['alertname', 'namespace']
     groupWait: 30s
     groupInterval: 5m
     repeatInterval: 1h
@@ -31,12 +31,11 @@ spec:
   receivers:
     - name: slack-team
       slackConfigs:
-        - apiURL: {{ .slack.api_url | quote }}
+        - apiURL:
             name: {{ .slack.name }}
-            key: {{ .slack.key }} 
+            key: {{ .slack.key }}
           channel: {{ .slack.channel | quote }}
           sendResolved: true
-
           text: |
             *Alert:* {{`{{ .CommonLabels.alertname }}`}}
             *Severity:* {{`{{ .CommonLabels.severity }}`}} 
@@ -46,17 +45,14 @@ spec:
 
           color: '{{`{{ if eq .CommonLabels.severity "critical" }}`}}danger{{`{{ else }}`}}warning{{`{{ end }}`}}'
 
-    # Prioritizing critical alert over warning
   inhibitRules:
-  - sourceMatchers:
-      - name: severity
-        value: critical
-    targetMatchers:
-      - name: severity
-        value: warning
-    equal:
-      - alertname
-      - namespace
+    - sourceMatchers:
+        - name: severity
+          value: critical
+      targetMatchers:
+        - name: severity
+          value: warning
+      equal:
+        - alertname
+        - namespace
 {{- end }}
-
-
