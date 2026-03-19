@@ -47,7 +47,7 @@ spec:
           color: '{{`{{ if eq .CommonLabels.severity "critical" }}`}}danger{{`{{ else }}`}}warning{{`{{ end }}`}}'
 
     # Prioritizing critical alert over warning
- inhibitRules:
+  inhibitRules:
   - sourceMatchers:
       - name: severity
         value: critical
