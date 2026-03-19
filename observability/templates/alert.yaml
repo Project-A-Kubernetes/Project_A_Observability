@@ -46,13 +46,11 @@ spec:
           color: '{{`{{ if eq .CommonLabels.severity "critical" }}`}}danger{{`{{ else }}`}}warning{{`{{ end }}`}}'
 
   inhibitRules:
-    - sourceMatchers:
-        - name: severity
-          value: critical
-      targetMatchers:
-        - name: severity
-          value: warning
-      equal:
-        - alertname
-        - namespace
+  - sourceMatch:
+      severity: 'critical'
+    targetMatch:
+      severity: 'warning'
+    equal:
+      - alertname
+      - namespace
 {{- end }}
