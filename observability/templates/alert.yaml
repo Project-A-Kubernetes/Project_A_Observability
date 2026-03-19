@@ -15,13 +15,13 @@ spec:
 
     routes:
       - matchers:
-          - severity="critical" #match pods with this labels
-          - namespace="prod" #match pods in this namespace
+          - severity: critical #match pods with this labels
+          - namespace: prod #match pods in this namespace
         receiver: slack-team #we can have different receiver here but will use slack, and same channel but we can use pagerduty 
 
       - matchers:
-          - severity="warning"
-          - namespace="prod"
+          - severity: warning
+          - namespace: prod
         receiver: slack-team # same here we can configure it to different receiver and send to different alert source like slack or email
 
   receivers:
@@ -52,3 +52,5 @@ spec:
         - alertname
         - namespace
 {{- end }}
+
+
